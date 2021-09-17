@@ -1,0 +1,8 @@
+{
+    "marketUrl": "https://marketplace.cryptobay.vip/",
+    "network": "BSC Mainnet",
+    "networkUrl": "https://bsc-dataseed1.binance.org/",
+    "chainId": "56",
+    "symbol": "BNB",
+    "blockExplorer": "https://bscscan.com/"
+}
