@@ -39,7 +39,7 @@ def go_to_page(page_number: int):
     driver.find_element_by_xpath("/html/body/div/div/div/div[2]/div[2]/ul/div/input").send_keys(page_number)
     time.sleep(0.5)
     driver.find_element_by_xpath("/html/body/div/div/div/div[2]/div[2]/ul/div/input").send_keys(Keys.RETURN)
-    time.sleep(2)
+    time.sleep(1)
 
 def get_initial_sold_from_marketplace(sold_already_exported: bool):
     if(sold_already_exported):
@@ -52,7 +52,7 @@ def get_initial_sold_from_marketplace(sold_already_exported: bool):
     raw_no_of_pages = driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[2]/ul/div').text
     no_of_pages = int(raw_no_of_pages.strip('/ '))
     
-    with open('db/extracted_sold.csv', mode='a+', buffering=1) as s:
+    with open(filename, mode='a+', buffering=1) as s:
     # Iterate backwards to the first page
         resume_page = no_of_pages - int(num_lines/10)
 
@@ -61,7 +61,7 @@ def get_initial_sold_from_marketplace(sold_already_exported: bool):
 
             no_of_elements = len(driver.find_elements_by_xpath("//div[@class='list-c'][2]//div[@class='item']"))
             for j in range(no_of_elements,0,-1):
-                sold_price = driver.find_element_by_xpath(f"/html/body/div/div/div/div[2]/div[2]/div[2]/div[2]/div[{j}]/div[4]/span[2]").text.strip("$")
+                sold_price = driver.find_element_by_xpath(f"/html/body/div/div/div/div[2]/div[2]/div[2]/div[2]/div[{j}]/div[4]/span[1]").text.strip("Ξ ")
                 # driver.find_element_by_xpath(f"//div[@class='list-c'][2]//div[@class='item'][{j}]").click()
                 for attempt in range(5):
                     try:
@@ -79,7 +79,7 @@ def get_initial_sold_from_marketplace(sold_already_exported: bool):
                 stats = get_ship_stats(sold_price)
                 s.write(stats + "\n")
                 driver.back()
-                time.sleep(3)
+                time.sleep(2)
                 go_to_page(i)
 
 
@@ -87,7 +87,7 @@ def get_initial_sold_from_marketplace(sold_already_exported: bool):
 
 def get_ship_stats(ship_sold_price:int):
     transaction_id = driver.current_url.split('/')[-1]
-    time.sleep(3)
+    time.sleep(2)
 
     # A gimmyck to retry until it finds the element
     zztry = None
@@ -148,7 +148,8 @@ def get_ship_stats(ship_sold_price:int):
 
 # If the initial export script has been run, then set this to True. Only delta will be needed
 sold_already_exported = False
-num_lines = sum(1 for line in open('db/extracted_sold.csv'))
+filename = 'db/extracted_sold_BNB.csv'
+num_lines = sum(1 for line in open(filename))
 
 # Create dataframe sold DF
 header = ['transaction_id', 'ship_id', 'ship_class', 'ship_durability', 'ship_owner', \
@@ -223,6 +224,7 @@ driver.find_element_by_xpath('//button[text()="Save"]').click()
 time.sleep(0.2)
 
 # Open marketplace
+time.sleep(5)
 driver.get(MARKET_URL)
 time.sleep(2)
 
