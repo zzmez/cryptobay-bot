@@ -1,3 +1,4 @@
 tools/metamask_10.1.0_0.pem
 tools/zzsecrets.json
-db/extracted_sold.csv
+db/out
+out-test_nb.ipynb
