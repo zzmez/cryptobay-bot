@@ -84,6 +84,20 @@ def get_initial_sold_from_marketplace(sold_already_exported: bool):
 
 
 
+def cancel_auction(driver: webdriver.chrome.webdriver.WebDriver, account: int = 0) -> callable:
+    driver.get("https://marketplace.cryptobay.io/profile/inventory")  # click on my account
+    time.sleep(3)
+    driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[2]/div[1]/div[2]/div[1]/div/span').click()   #click for dropdown menu
+    driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[2]/div[1]/div[2]/div[2]/ul[2]/li[1]').click()   #select for sale
+    time.sleep(3)
+    driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[3]/div').click()    #select ship
+    time.sleep(1)
+    driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[3]/div').click()    #select cancel
+    
+    
+    driver.switch_to.window(driver.window_handles[1])       # switch to metamask window
+    driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[2]').click() # press Confirm
+    driver.switch_to.window(driver.window_handles[0])
 
 def get_ship_stats(ship_sold_price:int):
     transaction_id = driver.current_url.split('/')[-1]
@@ -167,6 +181,7 @@ with open('tools/zzsecrets.json') as f:
 
 with open('tools/conf.json') as f:
     data = json.load(f)
+    global MARKET_URL
     MARKET_URL = data['marketUrl']
     NETWORK = data['network']
     NETWORK_URL = data['networkUrl']
