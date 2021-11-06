@@ -8,7 +8,8 @@ import time
 
 def login_with_metamask():
     # Click "Login" on cryptobay page
-    driver.find_element_by_xpath('/html/body/div[1]/div/header/div/div[2]/a').click()
+    element = driver.find_element_by_xpath('/html/body/div[1]/div/header/div/div[2]/a')
+    driver.execute_script("arguments[0].click();", element)
     time.sleep(0.5)
 
     # Select Metamask as a login
@@ -85,7 +86,7 @@ def get_initial_sold_from_marketplace(sold_already_exported: bool):
 
 
 def cancel_auction(driver: webdriver.chrome.webdriver.WebDriver, account: int = 0) -> callable:
-    driver.get("https://marketplace.cryptobay.io/profile/inventory")  # click on my account
+    driver.get("https://marketplace.cryptobay.top/profile/inventory")  # click on my account
     time.sleep(3)
     driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[2]/div[1]/div[2]/div[1]/div/span').click()   #click for dropdown menu
     driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[2]/div[1]/div[2]/div[2]/ul[2]/li[1]').click()   #select for sale
@@ -193,7 +194,7 @@ EXTENSION_PATH = 'tools/metamask_10.1.0_0.crx'
 opt = webdriver.ChromeOptions()
 opt.add_extension(EXTENSION_PATH)
 
-driver = webdriver.Chrome('tools\chromedriver.exe',options=opt)
+driver = webdriver.Chrome('tools\chromedriver_win.exe',options=opt)
 
 driver.switch_to.window(driver.window_handles[0])
 time.sleep(1)

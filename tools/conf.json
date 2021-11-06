@@ -1,8 +1,13 @@
 {
-    "marketUrl": "http://marketplace.cryptobay.io/",
+    "marketUrl": "http://marketplace.cryptobay.top/",
     "network": "BSC Mainnet",
     "networkUrl": "https://bsc-dataseed.binance.org/",
     "chainId": "56",
     "symbol": "BNB",
-    "blockExplorer": "https://bscscan.com/"
+    "blockExplorer": "https://bscscan.com/", 
+    "account1": "0x317Bb3Ab91690bFF7B512aE5F1D9B20A904375F2",
+    "account2": "0xc021f3db6dc458Da781f378f162Bd63ce2707cCa",
+    "account3": "0x95BDb34A9B152D41457e698624c78793a3c76f03",
+    "account4": "0x650F66A63597134c1468e9d00d16Dc84ff01c0b8",
+    "account5": "0x9FF1b76331839e82CA489afa5A1481BAB6c2b3Eb"
 }

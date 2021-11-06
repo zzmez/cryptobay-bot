@@ -1,14 +1,10 @@
 import time
+from datetime import date
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from os import error
 import json
 import requests
-
-def get_bnb_price():
-    return
-
-
 
 
 def init_driver() -> webdriver.chrome.webdriver.WebDriver:
@@ -31,7 +27,7 @@ def init_driver() -> webdriver.chrome.webdriver.WebDriver:
     opt = webdriver.ChromeOptions()
     opt.add_extension(EXTENSION_PATH)
 
-    driver = webdriver.Chrome('tools/chromedriver_macos',options=opt)
+    driver = webdriver.Chrome('tools/chromedriver_win.exe',options=opt)
 
     driver.switch_to.window(driver.window_handles[0])
     time.sleep(1)
@@ -105,11 +101,12 @@ def check_if_element_exists(driver: webdriver.chrome.webdriver.WebDriver, elemen
  
 def login_with_metamask(driver: webdriver.chrome.webdriver.WebDriver) -> callable:
     # Click "Login" on cryptobay page
-    driver.find_element_by_xpath('/html/body/div[1]/div/header/div/div[2]/a').click()
+    element = driver.find_element_by_xpath('/html/body/div[1]/div/header/div/div[2]/span')
+    driver.execute_script("arguments[0].click();", element)
     time.sleep(0.5)
 
     # Select Metamask as a login
-    driver.find_element_by_xpath('/html/body/div/div/div/div/div[1]/span').click()
+    driver.find_element_by_xpath('/html/body/div[2]/div[2]/div/div/div/div/div[2]/span').click()
     time.sleep(3)
 
     # Get Metamask window
@@ -152,7 +149,7 @@ def go_to_page(driver: webdriver.chrome.webdriver.WebDriver, page_number: int) -
 def check_authenticity(driver: webdriver.chrome.webdriver.WebDriver, link_auction: str) -> bool:
     is_authentic = True
     ship_id = link_auction.split(sep='/')[-2]
-    ship_web_json = requests.get(f"https://api.cryptobay.io/bay/cryptobaygetobject?\
+    ship_web_json = requests.get(f"https://api.cryptobay.top/bay/cryptobaygetobject?\
         data=%7B%22token_type%22%3A1%2C%22token_id%22%3A{ship_id}%2C%22\
         with_powerpoints%22%3Atrue%2C%22with_level%22%3Atrue%7D").json()
 

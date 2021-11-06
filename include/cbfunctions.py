@@ -1,14 +1,28 @@
+from datetime import datetime, timezone, date
 from os import error
-from selenium import webdriver
 import time
+from IPython.terminal.shortcuts import reset_buffer
 import pandas as pd
-from include.global_functions import check_authenticity, check_if_element_exists, switch_account
+from selenium import webdriver
+
+from include.global_functions import check_authenticity, check_if_element_exists, switch_account, compute_price
+
+
+def log_transaction(acc_id: int, tr_type: str, ship_id: int, \
+                    tr_id: int, price: float, resale_discount: float = None,\
+                    date: date = date.today().strftime('%Y-%m-%d')):
+    tr_df = pd.read_csv("db/transactions/transactions_hist.csv")
+    _columns = tr_df.columns
+    _list = [date, acc_id, tr_type, ship_id, tr_id, price, resale_discount]
+    _temp_row = pd.DataFrame([_list], columns=_columns)
+    final_df = tr_df.append(_temp_row)
+    final_df.to_csv("db/transactions/transactions_hist.csv", index=False)
 
 def buy_boat(driver: webdriver.chrome.webdriver.WebDriver, df: pd.DataFrame, account: int) -> callable:
     switch_account(driver, account)
     ship_id = str(df['ship_id'].values[0])
     transaction_id = str(df['transaction_id'].values[0])
-    link_auction = f"https://marketplace.cryptobay.io/ship/{ship_id}/{transaction_id}"
+    link_auction = f"https://marketplace.cryptobay.top/ship/{ship_id}/{transaction_id}"
     if check_authenticity(driver, link_auction) == True:
         driver.get(link_auction)
         element_buy = "/html/body/div[1]/div/div/div[2]/div[2]/div[1]/div[2]"
@@ -16,48 +30,75 @@ def buy_boat(driver: webdriver.chrome.webdriver.WebDriver, df: pd.DataFrame, acc
             raise error("Element does not exist")
         driver.execute_script("arguments[0].click();", driver.find_element_by_xpath(element_buy))
         driver.switch_to.window(driver.window_handles[1])       # switch to metamask window
-        # confirmation = driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[2]') # Confirm
-        confirmation = driver.find_element_by_xpath('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[1]') # Cancel - testing purposes
+        # confirmation = driver.find_element_by_xpath\
+            #('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[2]') # Confirm
+        confirmation = driver.find_element_by_xpath\
+            ('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[1]') # Cancel
         driver.execute_script("arguments[0].click();", driver.find_element_by_xpath(confirmation))
         driver.switch_to.window(driver.window_handles[0])       # switch back to marketplace window
         print(f"Bought ship {df['ship_id']} at the price of {df['predicted_price_BNB']}")
     else:
         print("Could not buy ship ")
 
-def sell_boat(driver: webdriver.chrome.webdriver.WebDriver, price: float, account: int) -> callable:
-    driver.get("https://marketplace.cryptobay.io/profile/inventory")  # click on my account
+def sell_boat(driver: webdriver.chrome.webdriver.WebDriver, acc_id: int, resale_discount: float, price: float = None) -> callable:
+    """
+    Usage:  sell_boat(driver, 5, 0.85)  # this automatically sets the price to 85%
+        or
+            sell_boat(driver, 5, 0.85, 0.10) #this disregards the resale discount 
+    """
+    switch_account(driver, acc_id)
+
+    driver.get("https://marketplace.cryptobay.top/profile/inventory")  
     time.sleep(3)
-    driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[3]/div').click()   #click on the boat
+    driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[3]/div').click() #click the boat
     time.sleep(3)
-    driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/div[2]/div[1]/div[1]').click()   #click on sell
-    driver.find_element_by_xpath('/html/body/div[2]/div[2]/div/div/div/div/div[3]/div[2]/input').clear()
-    driver.find_element_by_xpath('/html/body/div[2]/div[2]/div/div/div/div/div[3]/div[2]/input').send_keys(str(price))
-    driver.find_element_by_xpath('/html/body/div[2]/div[2]/div/div/div/div/div[4]/div').click()     #click on Confirm button
+    ship_str = driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[1]/div[3]').text
+    ship_id = int(ship_str.split("#")[1])
+    ship_obj = compute_price(ship_id, resale_discount)
+
+    if price is None:
+        price = ship_obj.discounted_price()
+
+    driver.find_element_by_xpath\
+        ('/html/body/div[1]/div/div/div/div[2]/div[1]/div[1]').click()   #click on sell
+    driver.find_element_by_xpath\
+        ('/html/body/div[4]/div[2]/div/div/div/div/div[3]/div[2]/input').clear()
+    driver.find_element_by_xpath\
+        ('/html/body/div[4]/div[2]/div/div/div/div/div[3]/div[2]/input').send_keys(str(price))
+    driver.find_element_by_xpath\
+        ('/html/body/div[4]/div[2]/div/div/div/div/div[4]/div').click()     #click on Confirm button
     time.sleep(3)
     driver.switch_to.window(driver.window_handles[2])       # switch to metamask window
-    driver.find_element_by_xpath('//*[@id="app-content"]/div/div[3]/div/div[3]/div[3]/footer/button[2]').click() # press Confirm
+    driver.find_element_by_xpath\
+        ('//*[@id="app-content"]/div/div[3]/div/div[3]/div[3]/footer/button[2]').click() # Confirm
     driver.switch_to.window(driver.window_handles[0])
-    ##LOGGING part    
+    time.sleep(3)
 
+    url = driver.current_url
+    tr_id = int(url.split('/')[-1])
+
+    log_transaction(acc_id, "resell", ship_id, tr_id, price, resale_discount)
 
 
 
 def cancel_auction(driver: webdriver.chrome.webdriver.WebDriver, account: int = 0) -> callable:
-    driver.get("https://marketplace.cryptobay.io/profile/inventory")  # click on my account
+    driver.get("https://marketplace.cryptobay.top/profile/inventory")  # click on my account
     time.sleep(6)
     switch_account(driver, account)
     time.sleep(6)
-    driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[2]/div[1]/div[2]/div[1]/div/span').click()   #click for dropdown menu
-    driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[2]/div[1]/div[2]/div[2]/ul[2]/li[1]').click()   #select for sale
+    driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[2]/div/div[2]/div[1]/div/span').click()   #click for dropdown menu
+    driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[2]/div/div[2]/div[2]/ul[2]/li[1]').click()   #select for sale
     time.sleep(5)
-    driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[3]/div').click()    #select ship
+    driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[3]/div').click()    #select ship
     time.sleep(5)
-    driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/div[2]/div[1]/div[3]').click()    #select cancel
+    driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[2]/div[1]/div[3]').click()    #select cancel
     time.sleep(5)
     
     driver.switch_to.window(driver.window_handles[2])       # switch to metamask window
     driver.find_element_by_xpath('//*[@id="app-content"]/div/div[3]/div/div[3]/div[3]/footer/button[2]').click() # press Confirm
     driver.switch_to.window(driver.window_handles[0])
-    ##LOGGING part
 
-    
+def resale_auction(driver: webdriver.chrome.webdriver.WebDriver, acc_id: int, resale_discount: float, price: float = None) -> callable:
+    cancel_auction(driver, account=acc_id)
+    time.sleep(15)
+    sell_boat(driver, acc_id,resale_discount, price)
