@@ -1,5 +1,6 @@
 tools/metamask_10.1.0_0.pem
 tools/zzsecrets.json
+airflow_out/*
 db/out
 out-test_nb.ipynb
 out-build_model_nb.ipynb

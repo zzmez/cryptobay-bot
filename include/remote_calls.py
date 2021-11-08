@@ -1,4 +1,3 @@
-
 import json
 import pickle
 import smtplib
@@ -109,6 +108,20 @@ class send_email():
         """
         self.send(self.html)
 
+    def on_super_offer(self, df: pd.DataFrame, flip_ratio: float) -> callable:
+        self.offer_df = df
+        self.flip_ratio = flip_ratio
+        self.msg['subject'] = f'Super offer found at flip ratio: {self.flip_ratio}'
+        self.html = f"""
+<html>
+  <head></head>
+  <body>
+    {self.offer_df.to_html(index=False)}
+  </body>
+</html>
+        """
+        self.send(self.html)
+
     def send(self, html):
         self.html = html
         self.part1 = MIMEText(self.html, 'html')
@@ -129,5 +142,51 @@ def get_sold_statistics():
     #https://api.cryptobay.top/bay/cryptobaygetauctionsummary?data=%7B%22timestamp%22%3A1636030119%7D
     pass
 
-def get_bnb_price():
-    return
+def get_binance_price_coinograph() -> int:
+    """
+    NOT USED. Limits API calls
+    Example
+            {
+        "exchange": "binance",
+        "pair": "bnbusdt",
+        "price": 335.8,
+        "ask": 335.8,
+        "bid": 335.7
+        }
+    """
+    price_json = requests.get("https://coinograph.io/ticker/?symbol=binance:bnbusdt").json()
+    return price_json['price']
+
+def get_binance_price_coingecko() -> float:
+    """
+    Example
+    {'id': 'binancecoin',
+    'symbol': 'bnb',
+    'name': 'Binance Coin',
+    'image': 'https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png?1547034615',
+    'current_price': 400.07,
+    'market_cap': 61889077351,
+    'market_cap_rank': 5,
+    'fully_diluted_valuation': 68296906490,
+    'total_volume': 1565273152,
+    'high_24h': 401.01,
+    'low_24h': 372.01,
+    'price_change_24h': 25.8,
+    'price_change_percentage_24h': 6.89444,
+    'market_cap_change_24h': 3991379311,
+    'market_cap_change_percentage_24h': 6.89385,
+    'circulating_supply': 154533651.9,
+    'total_supply': 170533651.9,
+    'max_supply': 170533651.9,
+    'ath': 686.31,
+    'ath_change_percentage': -41.64571,
+    'ath_date': '2021-05-10T07:24:17.097Z',
+    'atl': 0.0398177,
+    'atl_change_percentage': 1005707.34064,
+    'atl_date': '2017-10-19T00:00:00.000Z',
+    'roi': None,
+    'last_updated': '2021-10-01T08:23:03.665Z'}
+    """
+    url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=binancecoin"
+    price_json = requests.get(url).json()[0]['current_price']
+    return price_json

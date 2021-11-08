@@ -84,20 +84,20 @@ def init_driver() -> webdriver.chrome.webdriver.WebDriver:
 
 
 def check_if_element_exists(driver: webdriver.chrome.webdriver.WebDriver, element: str) -> bool:
-    zztry = False
+    element_exists = False
     x = 0
-    while (zztry is False and x < 3):
+    while (element_exists is False and x < 3):
         try:
             #ship_id = driver.find_element_by_xpath("//div[@class='tit']").text.split('#')[1]
             driver.find_element_by_xpath(element)
-            time.sleep(1)
-            zztry = True
+            time.sleep(5)
+            element_exists = True
         except:
             x += 1
             driver.refresh()
-            time.sleep(3)
+            time.sleep(5)
             pass
-    return zztry
+    return element_exists
  
 def login_with_metamask(driver: webdriver.chrome.webdriver.WebDriver) -> callable:
     # Click "Login" on cryptobay page
@@ -154,7 +154,7 @@ def check_authenticity(driver: webdriver.chrome.webdriver.WebDriver, link_auctio
         with_powerpoints%22%3Atrue%2C%22with_level%22%3Atrue%7D").json()
 
     driver.get(link_auction)
-    element_buy = "/html/body/div[1]/div/div/div[2]/div[2]/div[1]/div[2]"
+    element_buy = "/html/body/div[1]/div/div/div/div[2]/div[1]/div[2]"
     if check_if_element_exists(driver, element_buy) == False:
         raise error("Element does not exist")
     stats_from_json = ['raw_space','raw_speed','raw_skill','raw_defence','raw_attack','raw_morale']

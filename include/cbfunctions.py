@@ -5,7 +5,8 @@ from IPython.terminal.shortcuts import reset_buffer
 import pandas as pd
 from selenium import webdriver
 
-from include.global_functions import check_authenticity, check_if_element_exists, switch_account, compute_price
+from include.global_functions import check_authenticity, check_if_element_exists, switch_account
+from include.remote_calls import compute_price
 
 
 def log_transaction(acc_id: int, tr_type: str, ship_id: int, \
@@ -21,22 +22,22 @@ def log_transaction(acc_id: int, tr_type: str, ship_id: int, \
 def buy_boat(driver: webdriver.chrome.webdriver.WebDriver, df: pd.DataFrame, account: int) -> callable:
     switch_account(driver, account)
     ship_id = str(df['ship_id'].values[0])
+    price = float(df['selling_price_BNB'].values[0])
     transaction_id = str(df['transaction_id'].values[0])
     link_auction = f"https://marketplace.cryptobay.top/ship/{ship_id}/{transaction_id}"
     if check_authenticity(driver, link_auction) == True:
         driver.get(link_auction)
-        element_buy = "/html/body/div[1]/div/div/div[2]/div[2]/div[1]/div[2]"
+        element_buy = "/html/body/div[1]/div/div/div/div[2]/div[1]/div[2]"
         if check_if_element_exists(driver, element_buy) == False:
             raise error("Element does not exist")
         driver.execute_script("arguments[0].click();", driver.find_element_by_xpath(element_buy))
-        driver.switch_to.window(driver.window_handles[1])       # switch to metamask window
-        # confirmation = driver.find_element_by_xpath\
-            #('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[2]') # Confirm
-        confirmation = driver.find_element_by_xpath\
-            ('//*[@id="app-content"]/div/div[2]/div/div[4]/div[3]/footer/button[1]') # Cancel
+        time.sleep(3)
+        driver.switch_to.window(driver.window_handles[-1])       # switch to metamask window
+        confirmation = '//*[@id="app-content"]/div/div[3]/div/div[3]/div[3]/footer/button[2]' # Confirm
+        # confirmation = '//*[@id="app-content"]/div/div[3]/div/div[3]/div[3]/footer/button[1]' # Cancel
         driver.execute_script("arguments[0].click();", driver.find_element_by_xpath(confirmation))
         driver.switch_to.window(driver.window_handles[0])       # switch back to marketplace window
-        print(f"Bought ship {df['ship_id']} at the price of {df['predicted_price_BNB']}")
+        log_transaction(account, "buy", ship_id, transaction_id, price)
     else:
         print("Could not buy ship ")
 
@@ -44,7 +45,7 @@ def sell_boat(driver: webdriver.chrome.webdriver.WebDriver, acc_id: int, resale_
     """
     Usage:  sell_boat(driver, 5, 0.85)  # this automatically sets the price to 85%
         or
-            sell_boat(driver, 5, 0.85, 0.10) #this disregards the resale discount 
+            sell_boat(driver, 5, 1.0, 0.10) #this disregards the resale discount 
     """
     switch_account(driver, acc_id)
 
