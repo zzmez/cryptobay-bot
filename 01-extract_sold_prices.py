@@ -1,21 +1,8 @@
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import json
 import time
-
-# FUNCTIONS
-
-def login_with_metamask():
-    # Click "Login" on cryptobay page
-    element = driver.find_element_by_xpath('/html/body/div[1]/div/header/div/div[2]/a')
-    driver.execute_script("arguments[0].click();", element)
-    time.sleep(0.5)
-
-    # Select Metamask as a login
-    driver.find_element_by_xpath('/html/body/div/div/div/div/div[1]/span').click()
-    time.sleep(3)
-
+from include.global_functions import init_driver
 
 def wait_on_element(element: str):
     x = 0
@@ -47,10 +34,10 @@ def get_initial_sold_from_marketplace(sold_already_exported: bool):
         return
     #driver.maximize_window()
     # Select "Dashboard" tab
-    driver.find_element_by_xpath('/html/body/div/div/header/div/div[1]/div/a[1]').click()
+    driver.find_element_by_xpath('/html/body/div[1]/div/header/div/div[3]/div/div/a[1]').click()    
     time.sleep(3)
-    wait_on_element("/html/body/div/div/div/div[2]/div[2]/ul/div")
-    raw_no_of_pages = driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[2]/ul/div').text
+    # wait_on_element("/html/body/div/div/div/div[2]/div[2]/ul/div")
+    raw_no_of_pages = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/div[2]/ul/div').text
     no_of_pages = int(raw_no_of_pages.strip('/ '))
     
     with open(filename, mode='a+', buffering=1) as s:
@@ -175,94 +162,94 @@ header = ['transaction_id', 'ship_id', 'ship_class', 'ship_durability', 'ship_ow
 sold_df = pd.DataFrame(columns=header)
 
 
-with open('tools/zzsecrets.json') as f:
-    data = json.load(f)
-    SECRET_RECOVERY_PHRASE = data['SECRET_RECOVERY_PHRASE']
-    NEW_PASSWORD = data['NEW_PASSWORD']
+# with open('tools/zzsecrets.json') as f:
+#     data = json.load(f)
+#     SECRET_RECOVERY_PHRASE = data['SECRET_RECOVERY_PHRASE']
+#     NEW_PASSWORD = data['NEW_PASSWORD']
 
-with open('tools/conf.json') as f:
-    data = json.load(f)
-    global MARKET_URL
-    MARKET_URL = data['marketUrl']
-    NETWORK = data['network']
-    NETWORK_URL = data['networkUrl']
-    CHAINID = data['chainId']
-    SYMBOL = data['symbol']
-    BLOCK_EXPLORER = data['blockExplorer']
+# with open('tools/conf.json') as f:
+#     data = json.load(f)
+#     global MARKET_URL
+#     MARKET_URL = data['marketUrl']
+#     NETWORK = data['network']
+#     NETWORK_URL = data['networkUrl']
+#     CHAINID = data['chainId']
+#     SYMBOL = data['symbol']
+#     BLOCK_EXPLORER = data['blockExplorer']
 
-EXTENSION_PATH = 'tools/metamask_10.1.0_0.crx'
-opt = webdriver.ChromeOptions()
-opt.add_extension(EXTENSION_PATH)
+# EXTENSION_PATH = 'tools/metamask_10.1.0_0.crx'
+# opt = webdriver.ChromeOptions()
+# opt.add_extension(EXTENSION_PATH)
 
-driver = webdriver.Chrome('tools\chromedriver_win.exe',options=opt)
+# driver = webdriver.Chrome('tools\chromedriver_win.exe',options=opt)
 
-driver.switch_to.window(driver.window_handles[0])
-time.sleep(1)
+# driver.switch_to.window(driver.window_handles[0])
+# time.sleep(1)
 
-driver.find_element_by_xpath('//button[text()="Get Started"]').click()
-driver.find_element_by_xpath('//button[text()="Import wallet"]').click()
-driver.find_element_by_xpath('//button[text()="No Thanks"]').click()
+# driver.find_element_by_xpath('//button[text()="Get Started"]').click()
+# driver.find_element_by_xpath('//button[text()="Import wallet"]').click()
+# driver.find_element_by_xpath('//button[text()="No Thanks"]').click()
 
-# After this you will need to enter you wallet details
+# # After this you will need to enter you wallet details
 
-time.sleep(1)
+# time.sleep(1)
 
-inputs = driver.find_elements_by_xpath('//input')
-inputs[0].send_keys(SECRET_RECOVERY_PHRASE)
-inputs[1].send_keys(NEW_PASSWORD)
-inputs[2].send_keys(NEW_PASSWORD)
-driver.find_element_by_css_selector('.first-time-flow__terms').click()
-driver.find_element_by_xpath('//button[text()="Import"]').click()
-time.sleep(2)
+# inputs = driver.find_elements_by_xpath('//input')
+# inputs[0].send_keys(SECRET_RECOVERY_PHRASE)
+# inputs[1].send_keys(NEW_PASSWORD)
+# inputs[2].send_keys(NEW_PASSWORD)
+# driver.find_element_by_css_selector('.first-time-flow__terms').click()
+# driver.find_element_by_xpath('//button[text()="Import"]').click()
+# time.sleep(2)
 
-driver.find_element_by_xpath('//button[text()="All Done"]').click()
-time.sleep(1)
+# driver.find_element_by_xpath('//button[text()="All Done"]').click()
+# time.sleep(1)
 
-#Close the "What's new" page
-driver.find_element_by_xpath('//*[@id="popover-content"]/div/div/section/header/div/button').click()
+# #Close the "What's new" page
+# driver.find_element_by_xpath('//*[@id="popover-content"]/div/div/section/header/div/button').click()
 
-# Click on networks
-driver.find_element_by_xpath('//*[@id="app-content"]/div/div[1]/div/div[2]/div[1]/div/span').click()
+# # Click on networks
+# driver.find_element_by_xpath('//*[@id="app-content"]/div/div[1]/div/div[2]/div[1]/div/span').click()
 
-## Add BSC network to metamask
-driver.find_element_by_xpath('//*[@id="app-content"]/div/div[3]/div/li[7]/span').click()
-inputs = driver.find_elements_by_xpath('//input')
-inputs[0].send_keys(NETWORK)
-time.sleep(0.2)
-inputs[1].send_keys(NETWORK_URL)
-time.sleep(0.2)
-inputs[2].send_keys(CHAINID)
-time.sleep(0.2)
-inputs[3].send_keys(SYMBOL)
-time.sleep(0.2)
-inputs[4].send_keys(BLOCK_EXPLORER)
-driver.find_element_by_xpath('//button[text()="Save"]').click()
-time.sleep(0.2)
+# ## Add BSC network to metamask
+# driver.find_element_by_xpath('//*[@id="app-content"]/div/div[3]/div/li[7]/span').click()
+# inputs = driver.find_elements_by_xpath('//input')
+# inputs[0].send_keys(NETWORK)
+# time.sleep(0.2)
+# inputs[1].send_keys(NETWORK_URL)
+# time.sleep(0.2)
+# inputs[2].send_keys(CHAINID)
+# time.sleep(0.2)
+# inputs[3].send_keys(SYMBOL)
+# time.sleep(0.2)
+# inputs[4].send_keys(BLOCK_EXPLORER)
+# driver.find_element_by_xpath('//button[text()="Save"]').click()
+# time.sleep(0.2)
 
-# Open marketplace
-time.sleep(5)
-driver.get(MARKET_URL)
-time.sleep(2)
+# # Open marketplace
+# time.sleep(5)
+# driver.get(MARKET_URL)
+# time.sleep(2)
 
-login_with_metamask()
+# login_with_metamask()
 
-# Get Metamask window
-driver.switch_to.window(driver.window_handles[2])
-driver.find_element_by_xpath('//button[text()="Next"]').click()
-time.sleep(0.5)
-driver.find_element_by_xpath('//button[text()="Connect"]').click()
-time.sleep(0.5)
+# # Get Metamask window
+# driver.switch_to.window(driver.window_handles[2])
+# driver.find_element_by_xpath('//button[text()="Next"]').click()
+# time.sleep(0.5)
+# driver.find_element_by_xpath('//button[text()="Connect"]').click()
+# time.sleep(0.5)
 
-# Get cryptobay page 
-driver.switch_to.window(driver.window_handles[0])
+# # Get cryptobay page 
+# driver.switch_to.window(driver.window_handles[0])
 
-# Select "Marketplace" tab
-driver.find_element_by_xpath('/html/body/div/div/header/div/div[1]/div/a[3]').click()
+# # Select "Marketplace" tab
+# driver.find_element_by_xpath('/html/body/div/div/header/div/div[1]/div/a[3]').click()
 
-# Select "Dashboard" tab
-driver.find_element_by_xpath('/html/body/div/div/header/div/div[1]/div/a[1]').click()
+# # Select "Dashboard" tab
+# driver.find_element_by_xpath('/html/body/div/div/header/div/div[1]/div/a[1]').click()
 
-
+driver = init_driver()
 
 get_initial_sold_from_marketplace(False)
 
