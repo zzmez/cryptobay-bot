@@ -37,7 +37,7 @@ def init_driver() -> webdriver.chrome.webdriver.WebDriver:
     driver.find_element_by_xpath('//button[text()="No Thanks"]').click()
 
     # After this you will need to enter you wallet details
-
+    driver.find_element_by_xpath('//*[@id="app-content"]/div/div[3]/div/div/div/div[5]/div[1]/footer/button[1]').click()
     time.sleep(1)
 
     inputs = driver.find_elements_by_xpath('//input')
@@ -86,16 +86,16 @@ def init_driver() -> webdriver.chrome.webdriver.WebDriver:
 def check_if_element_exists(driver: webdriver.chrome.webdriver.WebDriver, element: str) -> bool:
     element_exists = False
     x = 0
-    while (element_exists is False and x < 3):
+    while (element_exists is False and x < 12):
         try:
             #ship_id = driver.find_element_by_xpath("//div[@class='tit']").text.split('#')[1]
             driver.find_element_by_xpath(element)
-            time.sleep(5)
+            time.sleep(10)
             element_exists = True
         except:
             x += 1
             driver.refresh()
-            time.sleep(5)
+            time.sleep(10)
             pass
     return element_exists
  
@@ -149,10 +149,13 @@ def go_to_page(driver: webdriver.chrome.webdriver.WebDriver, page_number: int) -
 def check_authenticity(driver: webdriver.chrome.webdriver.WebDriver, link_auction: str) -> bool:
     is_authentic = True
     ship_id = link_auction.split(sep='/')[-2]
-    ship_web_json = requests.get(f"https://api.cryptobay.top/bay/cryptobaygetobject?\
+    ship_web_json = requests.get(f"https://api.cryptobay.io/bay/cryptobaygetobject?\
         data=%7B%22token_type%22%3A1%2C%22token_id%22%3A{ship_id}%2C%22\
         with_powerpoints%22%3Atrue%2C%22with_level%22%3Atrue%7D").json()
 
+    # ship_web_json = requests.get(f"https://api.cryptobay.top/bay/cryptobaygetobject?\
+    #     data=%7B%22token_type%22%3A1%2C%22token_id%22%3A{ship_id}%2C%22\
+    #     with_powerpoints%22%3Atrue%2C%22with_level%22%3Atrue%7D").json()
     driver.get(link_auction)
     element_buy = "/html/body/div[1]/div/div/div/div[2]/div[1]/div[2]"
     if check_if_element_exists(driver, element_buy) == False:

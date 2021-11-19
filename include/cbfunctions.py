@@ -43,7 +43,8 @@ def buy_boat(driver: webdriver.chrome.webdriver.WebDriver, df: pd.DataFrame, acc
 
 def sell_boat(driver: webdriver.chrome.webdriver.WebDriver, acc_id: int, resale_discount: float, price: float = None) -> callable:
     """
-    Usage:  sell_boat(driver, 5, 0.85)  # this automatically sets the price to 85%
+    Usage:  sell_boat(driver, 5, 0.85)  
+        this automatically sets the price to 85% of the PREDICTED price !!! Not the actual price !!!
         or
             sell_boat(driver, 5, 1.0, 0.10) #this disregards the resale discount 
     """
@@ -51,6 +52,7 @@ def sell_boat(driver: webdriver.chrome.webdriver.WebDriver, acc_id: int, resale_
 
     driver.get("https://marketplace.cryptobay.top/profile/inventory")  
     time.sleep(3)
+    check_if_element_exists(driver, '/html/body/div[1]/div/div/div/div[3]/div')
     driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[3]/div').click() #click the boat
     time.sleep(3)
     ship_str = driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[1]/div[3]').text
@@ -69,7 +71,7 @@ def sell_boat(driver: webdriver.chrome.webdriver.WebDriver, acc_id: int, resale_
     driver.find_element_by_xpath\
         ('/html/body/div[4]/div[2]/div/div/div/div/div[4]/div').click()     #click on Confirm button
     time.sleep(3)
-    driver.switch_to.window(driver.window_handles[2])       # switch to metamask window
+    driver.switch_to.window(driver.window_handles[-1])       # switch to metamask window
     driver.find_element_by_xpath\
         ('//*[@id="app-content"]/div/div[3]/div/div[3]/div[3]/footer/button[2]').click() # Confirm
     driver.switch_to.window(driver.window_handles[0])
@@ -79,6 +81,7 @@ def sell_boat(driver: webdriver.chrome.webdriver.WebDriver, acc_id: int, resale_
     tr_id = int(url.split('/')[-1])
 
     log_transaction(acc_id, "resell", ship_id, tr_id, price, resale_discount)
+    time.sleep(20)
 
 
 
@@ -92,14 +95,26 @@ def cancel_auction(driver: webdriver.chrome.webdriver.WebDriver, account: int = 
     time.sleep(5)
     driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[3]/div').click()    #select ship
     time.sleep(5)
-    driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[2]/div[1]/div[3]').click()    #select cancel
+    driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[2]/div[1]/div[2]/div[2]').click()    #select cancel
     time.sleep(5)
     
-    driver.switch_to.window(driver.window_handles[2])       # switch to metamask window
+    driver.switch_to.window(driver.window_handles[-1])       # switch to metamask window
     driver.find_element_by_xpath('//*[@id="app-content"]/div/div[3]/div/div[3]/div[3]/footer/button[2]').click() # press Confirm
     driver.switch_to.window(driver.window_handles[0])
+    time.sleep(20)
 
-def resale_auction(driver: webdriver.chrome.webdriver.WebDriver, acc_id: int, resale_discount: float, price: float = None) -> callable:
+def resell_auction(driver: webdriver.chrome.webdriver.WebDriver, acc_id: int, resale_discount: float, price: float = None) -> callable:
+    cancel_auction(driver, account=acc_id)
+    sell_boat(driver, acc_id,resale_discount, price)
+
+def resell_auction_pct(driver: webdriver.chrome.webdriver.WebDriver, acc_id: int, pct_resale: float = 10) -> callable:
     cancel_auction(driver, account=acc_id)
     time.sleep(15)
-    sell_boat(driver, acc_id,resale_discount, price)
+    trx_df = pd.read_csv("db/transactions/transactions_hist.csv")
+    acc_df = pd.read_csv("db/accounts/account_status.csv")
+    if acc_df.loc[acc_df['acc_id'] == acc_id, 'available'].bool() == False:
+        new_price = float(trx_df[(trx_df['acc_id'] == acc_id) &
+                         (trx_df['tr_type'] == 'resell')]['price'].tail(1))
+        new_price = round(new_price * (100 - pct_resale)/100,3)
+        sell_boat(driver, acc_id, resale_discount=1, price=new_price)
+        

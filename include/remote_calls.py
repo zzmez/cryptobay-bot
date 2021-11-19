@@ -12,7 +12,9 @@ from email.mime.multipart import MIMEMultipart
 import os.path
 
 def get_boat_stats(ship_id: int) -> list:
-    url = f"https://api.cryptobay.top/bay/cryptobaygetobject?data=%7B%22token_type%22%3A1%2C%22\
+#    url = f"https://api.cryptobay.top/bay/cryptobaygetobject?data=%7B%22token_type%22%3A1%2C%22\
+#token_id%22%3A{ship_id}%2C%22with_powerpoints%22%3Atrue%2C%22with_level%22%3Atrue%7D"
+    url = f"https://api.cryptobay.io/bay/cryptobaygetobject?data=%7B%22token_type%22%3A1%2C%22\
 token_id%22%3A{ship_id}%2C%22with_powerpoints%22%3Atrue%2C%22with_level%22%3Atrue%7D"
     raw_json = requests.get(url).json()
     stats_list = []
