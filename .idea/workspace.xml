@@ -20,19 +20,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ce162cc3-582e-4a80-b60e-9c9aabf73f45" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/cryptobay.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/cryptobay.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/03-predict.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/03-predict.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/07-manual_resell.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/07-manual_resell.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/20-extract_misc.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/20-extract_misc.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/21-extract_sold_prices.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/21-extract_sold_prices.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/81-reporting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/81-reporting.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db/accounts/account_status.csv" beforeDir="false" afterPath="$PROJECT_DIR$/db/accounts/account_status.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db/extracted/all_sold_ships.csv" beforeDir="false" afterPath="$PROJECT_DIR$/db/extracted/all_sold_ships.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db/misc/total_sold_stats.csv" beforeDir="false" afterPath="$PROJECT_DIR$/db/misc/total_sold_stats.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db/transactions/transactions_hist.csv" beforeDir="false" afterPath="$PROJECT_DIR$/db/transactions/transactions_hist.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/cbfunctions.py" beforeDir="false" afterPath="$PROJECT_DIR$/include/cbfunctions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/global_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/include/global_functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/remote_calls.py" beforeDir="false" afterPath="$PROJECT_DIR$/include/remote_calls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/test.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,8 +46,9 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="ce162cc3-582e-4a80-b60e-9c9aabf73f45" name="Default Changelist" comment="" />
@@ -72,5 +69,24 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="-1577" y="407" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1637683092687">
+      <screen x="-3440" y="-118" width="3440" height="1400" />
+    </state>
+    <state x="-1577" y="407" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040/-3440.-118.3440.1400@-3440.-118.3440.1400" timestamp="1637683092687" />
+    <state x="-1252" y="507" key="FileChooserDialogImpl" timestamp="1637683224786">
+      <screen x="-3440" y="-118" width="3440" height="1400" />
+    </state>
+    <state x="-1252" y="507" key="FileChooserDialogImpl/0.0.1920.1040/-3440.-118.3440.1400@-3440.-118.3440.1400" timestamp="1637683224786" />
+    <state x="-1530" y="397" key="SettingsEditor" timestamp="1637683232088">
+      <screen x="-3440" y="-118" width="3440" height="1400" />
+    </state>
+    <state x="-1530" y="397" key="SettingsEditor/0.0.1920.1040/-3440.-118.3440.1400@-3440.-118.3440.1400" timestamp="1637683232088" />
+    <state x="-1368" y="471" width="672" height="678" key="search.everywhere.popup" timestamp="1637683171648">
+      <screen x="-3440" y="-118" width="3440" height="1400" />
+    </state>
+    <state x="-1368" y="471" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040/-3440.-118.3440.1400@-3440.-118.3440.1400" timestamp="1637683171648" />
   </component>
 </project>
